@@ -1,0 +1,55 @@
+SET search_path TO public;
+
+BEGIN;
+
+CREATE TABLE users (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role VARCHAR(20) DEFAULT 'USER' CHECK (role IN ('ADMIN', 'USER')),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE folders (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    parent_id BIGINT REFERENCES folders(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE documents (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    folder_id BIGINT REFERENCES folders(id) ON DELETE SET NULL,
+    title VARCHAR(255) NOT NULL,
+    file_url TEXT NOT NULL,
+    extracted_fields JSONB,
+    original_filename VARCHAR(255),
+    mime_type VARCHAR(100),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE tags (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE document_tags (
+    document_id BIGINT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+    tag_id BIGINT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    PRIMARY KEY (document_id, tag_id)
+);
+
+CREATE TABLE sync_events (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    entity_type VARCHAR(20) NOT NULL,
+    entity_id BIGINT NOT NULL,
+    operation VARCHAR(20) NOT NULL,
+    timestamp TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+COMMIT;
