@@ -4,12 +4,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.Map;
+
 public record CreateDocumentRequest(
         @NotNull Long userId,
         Long folderId,
         @NotBlank @Size(max = 255) String title,
         @NotBlank String fileUrl,
-        String extractedFields,
+        Map<String, Object> extractedFields,
         String originalFilename,
         String mimeType) {
 }
