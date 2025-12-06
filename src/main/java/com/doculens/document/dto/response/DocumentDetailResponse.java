@@ -1,17 +1,18 @@
 package com.doculens.document.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
 public record DocumentDetailResponse(
         Long id,
         String title,
         String fileUrl,
-        String extractedFields,
+        Map<String, Object> extractedFields,
         String originalFilename,
         String mimeType,
         Long folderId,
         Long userId,
-        Set<Long> tagIds,
+        List<Long> tagIds,
         LocalDateTime createdAt) {
 }
