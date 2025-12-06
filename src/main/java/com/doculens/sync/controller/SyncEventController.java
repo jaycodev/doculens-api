@@ -5,6 +5,8 @@ import com.doculens.sync.dto.request.SyncEventRequest;
 import com.doculens.sync.dto.response.SyncEventResponse;
 import com.doculens.sync.service.SyncEventService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
@@ -20,11 +22,13 @@ import java.util.List;
 @RequestMapping("/sync")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Sync", description = "Operations related to synchronization events")
 public class SyncEventController {
 
     private final SyncEventService syncEventService;
 
     @GetMapping
+    @Operation(summary = "List sync events by user")
     public ResponseEntity<ApiSuccess<List<SyncEventResponse>>> list(
             @RequestParam Long userId,
             @RequestParam String lastSync) {
@@ -36,6 +40,7 @@ public class SyncEventController {
     }
 
     @PostMapping
+    @Operation(summary = "Register a new sync event")
     public ResponseEntity<ApiSuccess<SyncEventResponse>> create(
             @Valid @RequestBody SyncEventRequest request) {
 
