@@ -12,15 +12,25 @@ import java.util.Optional;
 public interface FolderRepository extends CrudRepository<Folder, Long> {
 
     @Query("""
-            SELECT f.id, f.name, f.parent.id, f.createdAt
+            SELECT
+                f.id AS id,
+                f.name AS name,
+                f.parent.id AS parentId,
+                f.createdAt AS createdAt
             FROM Folder f
-            WHERE f.user.id = :userId AND (:parentId IS NULL OR f.parent.id = :parentId)
+            WHERE f.user.id = :userId
+              AND (:parentId IS NULL OR f.parent.id = :parentId)
             ORDER BY f.id DESC
             """)
     List<FolderListResponse> findList(Long userId, Long parentId);
 
     @Query("""
-            SELECT f.id, f.name, f.parent.id, f.user.id, f.createdAt
+            SELECT
+                f.id AS id,
+                f.name AS name,
+                f.parent.id AS parentId,
+                f.user.id AS userId,
+                f.createdAt AS createdAt
             FROM Folder f
             WHERE f.id = :id
             """)
