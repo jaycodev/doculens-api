@@ -13,21 +13,41 @@ import java.util.Optional;
 public interface DocumentRepository extends CrudRepository<Document, Long> {
 
     @Query("""
-            SELECT d.id, d.title, d.folder.id, d.mimeType, d.createdAt
+            SELECT
+                d.id AS id,
+                d.title AS title,
+                d.folder.id AS folderId,
+                d.mimeType AS mimeType,
+                d.createdAt AS createdAt
+
             FROM Document d
-            WHERE d.user.id = :userId AND (:folderId IS NULL OR d.folder.id = :folderId)
-            ORDER BY d.id DESC
+                WHERE d.user.id = :userId
+                    AND (:folderId IS NULL OR d.folder.id = :folderId)
+                ORDER BY d.id DESC
             """)
     List<DocumentListResponse> findList(Long userId, Long folderId);
 
     @Query("""
-            SELECT d.id, d.title, d.fileUrl, d.extractedFields,
-                   d.originalFilename, d.mimeType,
-                   d.folder.id, d.user.id,
-                   (SELECT t.id FROM d.tags t),
-                   d.createdAt
-            FROM Document d
-            WHERE d.id = :id
+                SELECT
+                    d.id AS id,
+                    d.title AS title,
+                    d.fileUrl AS fileUrl,
+                    d.extractedFields AS extractedFields,
+                    d.originalFilename AS originalFilename,
+                    d.mimeType AS mimeType,
+                    d.folder.id AS folderId,
+                    d.user.id AS userId,
+                    d.createdAt AS createdAt
+                FROM Document d
+                WHERE d.id = :id
             """)
     Optional<DocumentDetailResponse> findDetailById(Long id);
+
+    @Query("""
+                SELECT DISTINCT d
+                FROM Document d
+                LEFT JOIN FETCH d.tags
+                WHERE d.id = :id
+            """)
+    Optional<Document> findFullById(Long id);
 }
