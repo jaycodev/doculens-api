@@ -6,6 +6,9 @@ import com.doculens.folder.dto.response.FolderDetailResponse;
 import com.doculens.folder.dto.response.FolderListResponse;
 import com.doculens.folder.service.FolderService;
 import com.doculens.shared.api.ApiSuccess;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +22,13 @@ import java.util.List;
 @RequestMapping("/folders")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Folders", description = "Operations related to user folders")
 public class FolderController {
 
     private final FolderService folderService;
 
     @GetMapping
+    @Operation(summary = "List folders by user")
     public ResponseEntity<ApiSuccess<List<FolderListResponse>>> list(
             @RequestParam Long userId,
             @RequestParam(required = false) Long parentId) {
@@ -32,6 +37,7 @@ public class FolderController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get folder details by ID")
     public ResponseEntity<ApiSuccess<FolderDetailResponse>> get(
             @PathVariable @Min(1) Long id) {
         var folder = folderService.getDetailById(id);
@@ -39,6 +45,7 @@ public class FolderController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new folder")
     public ResponseEntity<ApiSuccess<FolderDetailResponse>> create(
             @Valid @RequestBody CreateFolderRequest request) {
         var created = folderService.create(request);
@@ -46,6 +53,7 @@ public class FolderController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update folder name")
     public ResponseEntity<ApiSuccess<FolderDetailResponse>> update(
             @PathVariable @Min(1) Long id,
             @Valid @RequestBody UpdateFolderRequest request) {
@@ -54,6 +62,7 @@ public class FolderController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a folder by ID")
     public ResponseEntity<ApiSuccess<Void>> delete(@PathVariable @Min(1) Long id) {
         folderService.delete(id);
         return ResponseEntity.ok(new ApiSuccess<>("Folder deleted", null));
