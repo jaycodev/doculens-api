@@ -6,7 +6,12 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -33,8 +38,9 @@ public class Document {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String fileUrl;
 
-    @Column(columnDefinition = "JSONB")
-    private String extractedFields;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> extractedFields;
 
     private String originalFilename;
 
@@ -45,5 +51,5 @@ public class Document {
 
     @ManyToMany
     @JoinTable(name = "document_tags", joinColumns = @JoinColumn(name = "document_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<com.doculens.tag.model.Tag> tags;
+    private Set<com.doculens.tag.model.Tag> tags = new HashSet<>();
 }
